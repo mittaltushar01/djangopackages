@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.urls import reverse
 from django.http import HttpResponseRedirect
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect, HttpResponse
 from django.views.generic import RedirectView
 from django.views.generic.edit import UpdateView
 from django.core.exceptions import MultipleObjectsReturned
@@ -60,9 +60,15 @@ def github_user_update(sender, **kwargs):
 user_logged_in.connect(github_user_update)
 
 
+def LogoutView(request):
+    logout(request)
+    return redirect('home')
+
+
+'''
 class LogoutView(RedirectView):
     pattern_name = "home"
 
     def get_redirect_url(self, *args, **kwargs):
         logout(self.request)
-        return super().get_redirect_url(*args, **kwargs)
+        return super().get_redirect_url(*args, **kwargs)'''

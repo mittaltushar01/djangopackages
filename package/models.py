@@ -293,6 +293,18 @@ class Package(BaseModel):
         return [int(x) for x in self.commits_over_52().split(',')]
 
 
+class ReviewPackage(BaseModel):
+    # For reviews of the packages by the users
+
+    package = models.ForeignKey(Package, on_delete=models.CASCADE)
+    written_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    review_text = models.TextField(max_length=80)
+    created_on = models.DateField(default=timezone.now)
+    
+    def __str__(self):
+        return "Package - {}, review written by - {}".format(self.package, self.written_by)
+
+
 class PackageExample(BaseModel):
 
     package = models.ForeignKey(Package, on_delete=models.CASCADE)

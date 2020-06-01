@@ -258,9 +258,25 @@ LOGIN_REDIRECT_URL = '/'
 # associate user via email
 #SOCIAL_AUTH_ASSOCIATE_BY_MAIL = True
 
+# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+#BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
 DATABASES = {
 
     "default": env.db("DATABASE_URL")
+
+    
+    #'default': {
+    #    'ENGINE': 'django.db.backends.sqlite3',
+    #    'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    #}
+    
+}
+
+GRAPH_MODELS = {
+  'all_applications': True,
+  'group_models': True,
 }
 
 

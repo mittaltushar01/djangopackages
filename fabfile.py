@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-This is a collection of useful utility functions when working with docker on different environments.
+This - ok is a collection of useful utility functions when working with docker on different environments.
 In order to use these functions, install fabric on your local machine with::
     pip install fabric
 Please note: Fabric is a remote code execution tool, NOT a remote configuration tool. While you can copy files

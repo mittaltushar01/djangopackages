@@ -16,6 +16,8 @@ from package.views import (
                             package_detail,
                             post_data,
                             edit_documentation,
+                            add_review,
+                            delete_review,
                             github_webhook
                             )
 
@@ -107,6 +109,19 @@ urlpatterns = [
         view=edit_documentation,
         name="edit_documentation",
     ),
+
+    url(
+        regex="^(?P<slug>[-\w]+)/review/add-or-update$",
+        view=add_review,
+        name="add_review",
+    ),
+
+    url(
+        regex="^(?P<slug>[-\w]+)/review/delete$",
+        view=delete_review,
+        name="delete_review",
+    ),
+
     url(
         regex="^github-webhook/$",
         view=github_webhook,

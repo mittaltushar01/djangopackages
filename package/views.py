@@ -1,5 +1,6 @@
 import importlib
 import json
+from django.utils import timezone
 
 from django.conf import settings
 from django.contrib import messages
@@ -17,8 +18,8 @@ from django.views.decorators.http import require_POST
 
 from grid.models import Grid
 from homepage.models import Dpotw, Gotw
-from package.forms import PackageForm, PackageExampleForm, DocumentationForm
-from package.models import Category, Package, PackageExample
+from package.forms import PackageForm, PackageExampleForm, DocumentationForm 
+from package.models import Category, Package, PackageExample, ReviewPackage
 from package.repos import get_all_repos
 
 from .utils import quote_plus
@@ -345,6 +346,8 @@ def package_detail(request, slug, template_name="package/package.html"):
     if request.GET.get("message"):
         messages.add_message(request, messages.INFO, request.GET.get("message"))
 
+    package_reviews = ReviewPackage.objects.filter(package=package).all().order_by('-created_on')    
+
     return render(request, template_name,
             dict(
                 package=package,
@@ -353,7 +356,8 @@ def package_detail(request, slug, template_name="package/package.html"):
                 pypi_no_release=pypi_no_release,
                 warnings=warnings,
                 latest_version=package.last_released(),
-                repo=package.repo
+                repo=package.repo,
+                package_reviews=package_reviews,
             )
         )
 
@@ -400,6 +404,55 @@ def edit_documentation(request, slug, template_name="package/documentation_form.
                 form=form
             )
         )
+
+
+@login_required
+def add_review(request, slug, template_name="package/review_form.html"):
+    # For adding or updating reviews
+
+    if request.method == "POST":
+        package = get_object_or_404(Package, slug=slug)
+        review = ReviewPackage.objects.filter(written_by=request.user, package=package).first()
+        
+        if review is not None:
+            review.review_text=request.POST.get("review_package")
+            review.created_on=timezone.now()
+            review.save()
+
+        else:
+            new_review = ReviewPackage(review_text=request.POST.get("review_package"))
+            new_package = get_object_or_404(Package, slug=slug)
+            new_review.package = package
+            new_review.written_by=request.user
+            new_review.save()
+
+        messages.add_message(request, messages.INFO, 'Reviews for package updated successfully')
+        return redirect(package)
+
+    package = get_object_or_404(Package, slug=slug)
+    review = ReviewPackage.objects.filter(written_by=request.user, package=package).first()
+    
+    if review is not None:
+        return render(request, template_name, {"review_text":review.review_text})
+
+    return render(request, template_name)    
+
+
+@login_required
+def delete_review(request, slug):
+    # To delete the review made by the user
+
+    package = get_object_or_404(Package, slug=slug)
+    review = ReviewPackage.objects.filter(written_by=request.user, package=package).first()
+        
+    if review is not None:
+        review.delete()
+        messages.add_message(request, messages.INFO, 'Your review deleted successfully')
+    
+    else:
+        messages.add_message(request, messages.INFO, 'Sorry!, you don\'t have any review')
+            
+    return redirect(package) 
 
 
 @csrf_exempt
