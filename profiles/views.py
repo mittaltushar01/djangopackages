@@ -60,15 +60,9 @@ def github_user_update(sender, **kwargs):
 user_logged_in.connect(github_user_update)
 
 
-def LogoutView(request):
-    logout(request)
-    return redirect('home')
-
-
-'''
 class LogoutView(RedirectView):
     pattern_name = "home"
 
     def get_redirect_url(self, *args, **kwargs):
         logout(self.request)
-        return super().get_redirect_url(*args, **kwargs)'''
+        return super().get_redirect_url(*args, **kwargs)
